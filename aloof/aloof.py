@@ -11,6 +11,7 @@ import random
 
 from morse.builder import *
 from strands_sim.builder.robots import Scitosa5
+from strands_sim.builder.robots import HumanStrands
 import threading
 
 class SimSetup():
@@ -30,10 +31,14 @@ class SimSetup():
         monitor_table_top = 1.15 #higher value: higher off the table, default: 2
         object_table_top = 0.95 #higher value: higher off the table, default: 2
 
+        human = Human()
+        human.translate(x=9,y=-6,z=0.0)
+        human.keyboard = Keyboard()
+        human.append(human.keyboard)
         #robot = Scitosa5()
         robot = Scitosa5(with_cameras = Scitosa5.WITH_OPENNI)
-        robot.translate(x=3.3,y=-9,z=0.0)
-        robot.rotate(z=3.14)
+        robot.translate(x=10,y=-6,z=0.0)
+        #robot.rotate(z=3.14)
 
         docking_station = PassiveObject('strands_sim/robots/docking_station.blend','dockingStation')
         docking_station.properties(Object = True)

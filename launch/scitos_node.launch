@@ -3,4 +3,6 @@
   <node pkg="topic_republisher" type="republish_ptu_jointstate.py" name="ptu_jointstate_republisher" output="screen"/>
   <node pkg="topic_republisher" type="republish_ptu_state.py" name="ptu_state_republisher" output="screen"/>
   <node pkg="topic_republisher" type="republish_odometry.py" name="odometry_republisher" output="screen"/>
+  <node pkg="topic_tools" type="relay" name="depthrelay" args="/head_kinect/depth/image /head_kinect/qhd/image_depth_rect32" output="screen"/>
+
 </launch>

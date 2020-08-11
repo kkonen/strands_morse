@@ -15,23 +15,20 @@ class Scitosa5(Robot):
     PTU_POSE_TOPIC        = '/ptu_state'
     BATTERY_TOPIC         = '/battery_state'
     SCAN_TOPIC            = '/scan'
-    VIDEOCAM_TOPIC        = '/head_xtion/rgb'
-    VIDEOCAM_TOPIC_SUFFIX = '/image_mono'
+    VIDEOCAM_TOPIC        = '/head_kinect/qhd'
+    VIDEOCAM_TOPIC_SUFFIX = '/image_color_rect'
     SEMANTICCAM_TOPIC     = '/semcam'
-    DEPTHCAM_TOPIC        = '/head_xtion/depth/points'
+    DEPTHCAM_TOPIC        = '/head_kinect/depth'
 
     # frame id's
-    DEPTHCAM_FRAME_ID = 'head_xtion_depth_optical_frame'
-    VIDEOCAM_FRAME_ID = 'head_xtion_rgb_optical_frame'
+    DEPTHCAM_FRAME_ID = 'head_kinect_depth_optical_frame'
+    VIDEOCAM_FRAME_ID = 'head_kinect_rgb_optical_frame'
     SEMANTICCAM_FRAME_ID = '/head_xtion_rgb_optical_frame'
 
     """
     A template robot model for scitosA5
     """
     def __init__(self, with_cameras = 1):
-        if with_cameras == Scitosa5.WITH_OPENNI:
-            Scitosa5.VIDEOCAM_TOPIC        = '/head_xtion/rgb8'
-            Scitosa5.DEPTHCAM_TOPIC        = '/head_xtion/depth/points_raw'
 
         # scitosA5.blend is located in the data/robots directory
         Robot.__init__(self, 'strands_sim/robots/scitos.blend')
@@ -53,8 +50,8 @@ class Scitosa5(Robot):
         self.motion.add_interface('ros', topic= Scitosa5.MOTION_TOPIC)
 
         # Keyboard control
-        self.keyboard = Keyboard()
-        self.append(self.keyboard)
+        #self.keyboard = Keyboard()
+        #self.append(self.keyboard)
 
         self.ptu = PTU() # creates a new instance of the actuator
         self.append(self.ptu)
@@ -93,7 +90,7 @@ class Scitosa5(Robot):
         self.scan.properties(Visible_arc = False)
         self.scan.properties(laser_range = 30.0)
         self.scan.properties(resolution = 1.0)
-        self.scan.properties(scan_window = 180.0)
+        self.scan.properties(scan_window = 360.0)
         self.scan.create_laser_arc()
         self.scan.add_interface('ros', topic= Scitosa5.SCAN_TOPIC)
 
@@ -123,25 +120,26 @@ class Scitosa5(Robot):
 
             if with_cameras < Scitosa5.WITHOUT_DEPTHCAMS:
                 # Depth camera
-                self.depthcam = DepthCamera() # Kinect() RVIZ crashes when depthcam data is visualized!?
-                self.ptu.append(self.depthcam)
-                self.depthcam.translate(0.00, 0.02, 0.0945)
+                #self.depthcam = DepthCamera() # Kinect() RVIZ crashes when depthcam data is visualized!?
+                self.depth = Kinect()
+                self.ptu.append(self.depth)
+                self.depth.translate(0.00, 0.02, 0.0945)
+                #self.depth.depth_camera.properties(cam_near=0.1, cam_far=15.0)
                 #self.append(self.depthcam)
                 #self.depthcam.translate(0.09, 0.02, 1.6795)
 
                 # set the near clip very low,
                 # otherwise the depthcam scans through objects within the clipping area!
-                self.depthcam.properties(cam_near = 0.1)
 
                 # workaround for point cloud with offset
-                if with_cameras == Scitosa5.WITH_OPENNI:
-                    self.depthcam.properties(cam_width = 640, cam_height = 480, cam_focal = 28.5)
-                    bpy.context.scene.render.resolution_x = 640
-                    bpy.context.scene.render.resolution_y = 480
-                else:
-                    self.depthcam.properties(cam_width = 128, cam_height = 128)
-                    bpy.context.scene.render.resolution_x = 128
-                    bpy.context.scene.render.resolution_y = 128
+                #if with_cameras == Scitosa5.WITH_OPENNI:
+                self.depth.depth_camera.properties(cam_width = 640, cam_height = 480, cam_focal = 26.25)
+                #bpy.context.scene.render.resolution_x = 640
+                #bpy.context.scene.render.resolution_y = 480
+                #else:
+                #   self.kinect.depth_camera.properties(cam_width = 128, cam_height = 128)
+                #  bpy.context.scene.render.resolution_x = 128
+                #   bpy.context.scene.render.resolution_y = 128
 
-                self.depthcam.rotate(0, 0, 0)
-                self.depthcam.add_interface('ros', topic= Scitosa5.DEPTHCAM_TOPIC, frame_id= Scitosa5.DEPTHCAM_FRAME_ID, tf='False')
+                #self.depthcam.rotate(0, 0, 0)
+                self.depth.depth_camera.add_interface('ros', topic= Scitosa5.DEPTHCAM_TOPIC, frame_id= Scitosa5.DEPTHCAM_FRAME_ID, tf='False')

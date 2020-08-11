@@ -19,6 +19,15 @@ robot = Scitosa5()
 robot.translate(x=3.75,y=-4.1, z=0.1)
 robot.rotate(z=-1.57)
 
+human = Human()
+human.translate(x=3.75,y=-2.1, z=0.1)
+human.keyboard = Keyboard()
+human.append(human.keyboard)
+
+human.odometry = Odometry() 
+human.append(human.odometry)
+human.odometry.add_interface('ros', topic="human/sim/pose", frame_id = "human", child_frame_id = "human_footprint")
+
 lift = Elevator()
 lift.translate(3.81419,2.51356,0)
 
@@ -45,4 +54,3 @@ model_file=os.path.join(os.path.dirname(os.path.abspath( __file__ )),'data/cs_lg
 env = Environment(model_file,fastmode=False)
 env.place_camera([10.0, -10.0, 10.0])
 env.aim_camera([1.05, 0, 0.78])
-
